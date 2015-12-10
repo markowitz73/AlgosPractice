@@ -1,6 +1,6 @@
 //This cpp is about a simple LRUCache impl, which stores k-v as <int, int>
 //It use an entry as the cache unit to store data, which at the same time
-//work as a node in a doubly linked list. When we first create the LRUCache
+//work as a node in a circular doubly linked list. When we first create the LRUCache
 //a dummy node containing no data named LRUCache::head_ would act as the 
 //start point of this list so we can easily remove or insert node behind
 //it. Also, it is much cheaper compared to std::list cause we don't need
