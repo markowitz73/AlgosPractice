@@ -38,7 +38,7 @@ public:
         }
         return -1;
     }
-    int Set(int key, int value) {
+    void Set(int key, int value) {
         auto it = entryMap.find(key);
         if (it != entryMap.end()) {
             printf("key:%d val:%d found in entryMap!\n", key, value);
