@@ -1,6 +1,21 @@
+//This cpp is about a simple LRUCache impl, which stores k-v as <int, int>
+//It use an entry as the cache unit to store data, which at the same time
+//work as a node in a doubly linked list. When we first create the LRUCache
+//a dummy node containing no data named LRUCache::head_ would act as the 
+//start point of this list so we can easily remove or insert node behind
+//it. Also, it is much cheaper comparing to std::list cause we don't need
+//that many functions. 
+//We use an unordered_map for quick hashing to get the entry pointer
+//(implementing a red black tree is too hard for me). thus we no longer
+//have to iterate the list to find the entry we need.
+
 #include <unordered_map>
 #include <utility>
 #include <cstdio>
+
+
+//TODO
+// Wrap entries with simple idiom raii aka refs counting & auto release
 
 struct entry{
     entry() {}
@@ -66,6 +81,7 @@ private:
     void operator=(LRUCache& c) {}
     
     //list operations
+    //there's no reason why i returned an entry* here
     entry* RemoveEntry(entry* e){
         printf("removing entry which key:%d val:%d\n", e->key_, e->value_);
         e->next->prev = e->prev;
