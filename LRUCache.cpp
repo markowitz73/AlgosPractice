@@ -3,7 +3,7 @@
 //work as a node in a doubly linked list. When we first create the LRUCache
 //a dummy node containing no data named LRUCache::head_ would act as the 
 //start point of this list so we can easily remove or insert node behind
-//it. Also, it is much cheaper comparing to std::list cause we don't need
+//it. Also, it is much cheaper compared to std::list cause we don't need
 //that many functions. 
 //We use an unordered_map for quick hashing to get the entry pointer
 //(implementing a red black tree is too hard for me). thus we no longer
