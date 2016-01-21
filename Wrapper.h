@@ -18,7 +18,7 @@ public:
 
     Wrapper<T>& operator = (const Wrapper<T>& rhs) {
         if (this != rhs) {
-            if (release == 0) {
+            if (release() == 0) {
                 delete data_;
             }
 
@@ -48,4 +48,3 @@ private:
     T* data_;
     size_t ref_;
 };
-
