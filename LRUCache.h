@@ -10,8 +10,6 @@
 
 #include <unordered_map>
 #include <utility>
-#include <cstdio>
-
 
 //TODO
 //Wrap entries with simple idiom RAII aka: refs counting & auto release
@@ -49,11 +47,8 @@ public:
         head_.next = &head_;
     }
     ~LRUCache() {
-        printf("Brief Summary\ntheir are %d entries in list, %d nodes in map\n", size_, entryMap.size());
-
         entry* e = head_.next;
         while(e != &head_) {
-            printf("deleting node key:%d val:%d \n", e->key_, e->value_);
             entry* ref = e;
             e = e->next;
             delete ref;
@@ -78,9 +73,7 @@ public:
             RemoveEntry(it->second);
             AppendEntry(it->second);
         } else {
-            printf("we didn't find key in the map\n", key, value);
             if (size_ == capacity_) {
-                printf("we are full filled\n");
                 entry* old = head_.prev;
                 RemoveEntry(old);
                 size_--;
