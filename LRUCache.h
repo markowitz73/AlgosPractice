@@ -1,13 +1,12 @@
-//This cpp is about a simple LRUCache impl, which stores k-v as <int, int>
-//It use an entry as the cache unit to store data, which at the same time
-//work as a node in a circular doubly linked list. When we first create the LRUCache
+//This header is about a simple LRUCache impl, which stores key-value pairs.
+//It uses an entry as the cache unit to store data, which at the same time
+//work as a node in a circular doubly linked list.When we first create a cache.
 //a dummy node containing no data named LRUCache::head_ would act as the 
 //start point of this list so we can easily remove or insert node behind
-//it. Also, it is much cheaper compared to std::list cause we don't need
+//it. Also, it is much cheaper compared to std::list because we don't need
 //that many functions. 
-//We use an unordered_map for quick hashing to get the entry pointer
-//(implementing a red black tree is too hard for me). thus we no longer
-//have to iterate the list to find the entry we need.
+//Besides, We use an unordered_map for quick hashing to get the entry pointer
+//thus we no longer have to iterate the list to find the entry we need.
 
 #include <unordered_map>
 #include <utility>
@@ -15,19 +14,35 @@
 
 
 //TODO
-// Wrap entries with simple idiom raii aka refs counting & auto release
-
-struct entry{
-    entry() {}
-    entry(int key, int value) : key_(key), value_(value) {}
-    entry* prev;
-    entry* next;
-    int key_;
-    int value_;
+//Wrap entries with simple idiom RAII aka: refs counting & auto release
+template <typename K, typename V>
+struct _entry{
+    _entry() {}
+    _entry(K key, V value) : key_(key), value_(value) {}
+    _entry<K, V>* prev;
+    _entry<K, V>* next;
+    K key_;
+    V value_;
+};
+template <typename V>
+struct _result{
+    _result() : valid_(false), value_(nullptr){}
+    _result(V* v) : valid_(true), value_(v){}
+    inline V Get(){
+        return *value_;
+    }
+    inline bool Valid(){
+        return valid_;
+    }
+    V* value_;
+    bool valid_;
 };
 
+template<typename K, typename V>
 class LRUCache{
 public:
+    using Result = _result<V>;
+    using entry = _entry<K, V>;
     LRUCache(int capacity) : capacity_(capacity), size_(0) {
         head_ = entry();
         head_.prev = &head_;
@@ -44,27 +59,30 @@ public:
             delete ref;
         }
     } //clean up entries
-    int Get(int key) {
+
+    Result Get(const K& key) {
         auto it = entryMap.find(key);
         if (it != entryMap.end()) {
-            entry* e = RemoveEntry(it->second);
+            entry* e = it->second;
+            RemoveEntry(e);
             AppendEntry(e);
-            return it->second->value_;
+            return Result(&(e->value_));
         }
-        return -1;
+        return Result();
     }
-    void Set(int key, int value) {
+
+    void Set(K key, V value) {
         auto it = entryMap.find(key);
         if (it != entryMap.end()) {
-            printf("key:%d val:%d found in entryMap!\n", key, value);
             it->second->value_ = value;
             RemoveEntry(it->second);
             AppendEntry(it->second);
         } else {
-            printf("we didn't find key:%d val:%d in map\n", key, value);
+            printf("we didn't find key in the map\n", key, value);
             if (size_ == capacity_) {
                 printf("we are full filled\n");
-                entry* old = RemoveEntry(head_.prev);
+                entry* old = head_.prev;
+                RemoveEntry(old);
                 size_--;
                 entryMap.erase(old->key_);
                 delete old;
@@ -72,9 +90,10 @@ public:
             entry* e = new entry(key, value);
             AppendEntry(e);
             size_++;
-            entryMap.insert(std::pair<int, entry*>(key, e));
+            entryMap.insert(std::pair<K, entry*>(key, e));
         }
     }
+
 private:
     //not allowed to copy
     LRUCache(LRUCache& c) {}
@@ -82,15 +101,12 @@ private:
     
     //list operations
     //there's no reason why i returned an entry* here
-    entry* RemoveEntry(entry* e){
-        printf("removing entry which key:%d val:%d\n", e->key_, e->value_);
+    void RemoveEntry(entry* e){
         e->next->prev = e->prev;
         e->prev->next = e->next;
-        return e;
     }
 
     void AppendEntry(entry* e){
-        printf("appending entry which key:%d val:%d\n", e->key_, e->value_);
         e->prev = &head_;
         e->next = head_.next;
         head_.next->prev = e;
@@ -98,19 +114,9 @@ private:
     }
 
     //data members
-    std::unordered_map<int, entry*> entryMap;
+    std::unordered_map<K, entry*> entryMap;
     entry head_;
-    int capacity_;
-    int size_;
+    K capacity_;
+    V size_;
 };
 
-int main() {
-    LRUCache c(5);
-    c.Set(2, 1);
-    c.Set(3, 5);
-    c.Set(3, 6);
-    printf("stop\n");
-    printf("try to find a key 3 val is %d:", c.Get(3));
-    printf("here we created a lrucache\n");
-    return 0;
-}
