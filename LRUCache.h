@@ -109,7 +109,7 @@ private:
     //data members
     std::unordered_map<K, entry*> entryMap;
     entry head_;
-    K capacity_;
-    V size_;
+    int capacity_;
+    int size_;
 };
 
