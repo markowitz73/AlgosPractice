@@ -32,6 +32,7 @@ struct _result{
     inline bool Valid(){
         return valid_;
     }
+private:
     V* value_;
     bool valid_;
 };
@@ -41,6 +42,7 @@ class LRUCache{
 public:
     using Result = _result<V>;
     using entry = _entry<K, V>;
+
     LRUCache(int capacity) : capacity_(capacity), size_(0) {
         head_ = entry();
         head_.prev = &head_;
@@ -93,7 +95,6 @@ private:
     void operator=(LRUCache& c) {}
     
     //list operations
-    //there's no reason why i returned an entry* here
     void RemoveEntry(entry* e){
         e->next->prev = e->prev;
         e->prev->next = e->next;
