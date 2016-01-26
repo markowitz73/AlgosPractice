@@ -7,6 +7,8 @@
 //that many functions. 
 //Besides, We use an unordered_map for quick hashing to get the entry pointer
 //thus we no longer have to iterate the list to find the entry we need.
+#ifndef __LRUCACHE_H__
+#define __LRUCACHE_H__
 
 #include <unordered_map>
 #include <utility>
@@ -113,4 +115,5 @@ private:
     int capacity_;
     int size_;
 };
-
+//header ends
+#endif
